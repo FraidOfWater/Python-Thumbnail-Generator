@@ -55,9 +55,6 @@ def check():
     generated_so_far.set(f"{new}/{length}")
     if len(last) == 3 and last[0] == last[-1]: return
     root.after(500, check)
-    
-"""def increment_generated_so_far(processed_count):
-    generated_so_far.set(f"{processed_count}/{length}")"""
 
 def on_close():
     save_data = {
@@ -78,11 +75,10 @@ def on_close():
 
 # GUI Setup
 root = tk.Tk()
-root.title("Advanced Thumbnail Generator")
+root.title("Thumbnail Generator")
 root.config(bg="#202041")
 root.protocol("WM_DELETE_WINDOW", on_close)
 
-# Configure weights so content centers/expands correctly
 root.columnconfigure(0, weight=1)
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -106,8 +102,6 @@ mode_var = tk.StringVar(value="Keep Aspect Ratio")
 naming_var = tk.StringVar(value="Original Name")
 structure_var = tk.StringVar(value="Preserve Structure")
 generated_so_far = tk.StringVar(value="0/0")
-
-# --- GRID LAYOUT ---
 
 # 1. Folder Selection Frame
 frame_top = tk.Frame(root, bg="#202041")
