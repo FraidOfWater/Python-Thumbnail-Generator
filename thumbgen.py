@@ -34,16 +34,11 @@ class Imagefile:
 
 class ThumbManager:
     class DaemonThreadPoolExecutor(ThreadPoolExecutor):
-        """ThreadPoolExecutor that sets all worker threads as daemon threads."""
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self._set_daemon_threads(kwargs["thread_name_prefix"])
 
         def _set_daemon_threads(self, name):
-            """
-            Replace all non-daemon threads in the executor with daemon threads.
-            Called after pool creation. Compatible with Python 3.9–3.13.
-            """
             old_threads = list(self._threads)
             self._threads.clear()
             for i in range(len(old_threads), self._max_workers):
@@ -52,7 +47,6 @@ class ThumbManager:
                 self._threads.add(t)
 
         def _worker_entry(self):
-            """Our wrapper for the internal work queue processing loop."""
             while True:
                 try:
                     work_item = self._work_queue.get(block=True)
@@ -106,17 +100,14 @@ class ThumbManager:
         if self.stop_event.is_set():
             self.stop_event.clear()
 
-        # recreate executors if missing
         if not getattr(self, "thumb_pool", None):
             self.thumb_pool = ThumbManager.DaemonThreadPoolExecutor(thread_name_prefix="(Pool) T_thread", max_workers=self.thumb_workers)
 
-        # start worker threads only if dead
         if not getattr(self, "_thumb_worker_running", False):
             self._thumb_worker_running = True
             self.thumb_after_id = self.root.after(1, self._thumb_worker)
 
     def stop_background_worker(self):
-        """Tell workers to stop, but never block the main thread."""
         self.stop_event.set()
         if self.thumb_after_id:
             self.root.after_cancel(self.thumb_after_id)
