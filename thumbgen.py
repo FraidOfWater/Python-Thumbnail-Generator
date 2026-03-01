@@ -7,11 +7,16 @@ from PIL import Image
 import threading
 from imageio import get_reader
 vipsbin = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vips-dev-8.18", "bin")
-os.environ['PATH'] = os.pathsep.join((vipsbin, os.environ['PATH']))
-os.add_dll_directory(vipsbin)
-if os.path.isdir(vipsbin):
+pyvips_exists = False
+if os.path.exists(vipsbin):
+    os.environ['PATH'] = os.pathsep.join((vipsbin, os.environ['PATH']))
     os.add_dll_directory(vipsbin)
-import pyvips
+    if os.path.isdir(vipsbin):
+        os.add_dll_directory(vipsbin)
+    import pyvips
+    pyvips_exists = True
+else: print(f"Libvips not found in {vipsbin}.\nDownload libvips windows binaries (64, ALL or WEB). https://github.com/libvips/build-win64-mxe/releases/tag/v8.18.0\nFalling back to PIL.")
+
 
 class Imagefile:
     def __init__(self, name, path, ext) -> None:
@@ -64,6 +69,8 @@ class ThumbManager:
     thumb_pool = None
     frame_pool = None
     def __init__(self, root, data_dir, func, status_label):
+        global pyvips_exists
+        self.pyvips_exists = pyvips_exists
         self.root = root
         self.status_label = status_label
         self.data_dir = data_dir
@@ -226,7 +233,7 @@ class ThumbManager:
             finally: 
                 if reader: reader.close()
         else:
-            if self.mode == "Keep Aspect Ratio":
+            if self.mode == "Keep Aspect Ratio" and self.pyvips_exists:
                 try:
                     vips_img = pyvips.Image.thumbnail(obj.path, self.size)
                     buffer = vips_img.write_to_memory()
