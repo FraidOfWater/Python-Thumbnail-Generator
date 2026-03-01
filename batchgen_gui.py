@@ -159,7 +159,10 @@ tk.Button(frame_actions, text="Source", command=open_source, bg="#404060", fg="w
 tk.Button(frame_actions, text="Dest", command=open_dest, bg="#404060", fg="white").grid(row=0, column=1, sticky="ew")
 tk.Button(frame_actions, text="Generate Thumbs", command=generate_thumbnails, bg="#404060", fg="white").grid(row=0, column=3, sticky="ew")
 
-status_label = tk.Label(root, text="Ready", bg="#202041", fg="white")
+import random
+messages = ["Hello", "Salutations", "I'm sorry Dave. I'm afraid I can't do that", "First things last", "Broken perfectly", "Sure as the Sun", "Dog days aren't over", "Monster afoot", "Sympathy for the Moon", "Sunny side Up", "Caught in a Good Lie", "Sinking Ships", "Wave Hello", "Cut to Size", "All Prevailing", "Light in the Darkness", "Heavenly Sin", "You're my sunshine", "The great blue", "Alone in the golden city", "An Ungodly row on Deck", "Lost and Found", "A moonless night", "Nothing's too hard - Nothing's easy.", "Drink water", "Ally cat", "Waking dream", "Hugged to death", "Mean streak", "Heavy air", "Kissing spree", "Little on the nose", "Cacophony of Voices", "When the sun loves the Moon", "Beings Beyond", "Reality Escalator", "The cave never really leaves people", "Selfish wish", "Wanting/Knowing"]
+msg = random.choice(messages)
+status_label = tk.Label(root, text=msg, bg="#202041", fg="white")
 status_label.grid(row=4, column=0, pady=(5, 0))
 Thumbnail_generator = ThumbManager(root, data_dir, None, status_label)
 
