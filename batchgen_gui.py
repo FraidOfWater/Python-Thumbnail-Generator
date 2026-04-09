@@ -4,7 +4,7 @@ import subprocess
 import tkinter as tk
 from tkinter import filedialog, ttk
 from threading import Thread
-from thumbgen import ThumbManager, walk
+from thumbgen import ThumbManager
 
 def select_folder():
     prompt = filedialog.askdirectory()
@@ -23,8 +23,9 @@ def open_dest():
 length = 0
 last = []
 def generate_thumbnails():
+    path = os.path.abspath(folder_path_var.get().strip('"').strip("'").strip())
     os.makedirs(data_dir, exist_ok=True)
-    if not folder_path_var.get(): return
+    if not path: return
     
     settings = {
         "size": int(size_var.get()),
@@ -40,27 +41,15 @@ def generate_thumbnails():
         global length
         global last
         last.clear()
-        imagelist = [(x) for x in walk(folder_path_var.get())]
+        imagelist = [(x) for x in Thumbnail_generator.walk(path, data_dir)]
         length = len(imagelist)
         generated_so_far.set(f"0/{length}")
+        Thumbnail_generator.processed_count = 0
         Thumbnail_generator.generate(imagelist, settings)
         """root.after(0, check)"""
 
     Thread(target=run, daemon=True).start()
     
-"""def check():
-    global last
-    i = 0
-    for root1, dirs, files in os.walk(data_dir):
-        for x in files:
-            i += 1
-    new = i
-    last.append(new)
-    if len(last) == 4: last.pop(0)
-    generated_so_far.set(f"{new}/{length}")
-    if len(last) == 3 and last[0] == last[-1]: return
-    root.after(500, check)"""
-
 def on_close():
     save_data = {
         "preferences": {
@@ -165,7 +154,7 @@ tk.Button(frame_actions, text="Dest", command=open_dest, bg="#404060", fg="white
 tk.Button(frame_actions, text="Generate Thumbs", command=generate_thumbnails, bg="#404060", fg="white").grid(row=0, column=3, sticky="ew")
 
 import random
-messages = ["Hello", "Salutations", "I'm sorry Dave - I'm afraid I can't do that", "First things last", "Broken perfectly", "Sure as the Sun", "Dog days aren't over", "Monster afoot", "Sympathy for the Moon", "Sunny side Up", "Caught in a Good Lie", "Sinking Ships", "Wave Hello", "Cut to Size", "All Prevailing", "Light in the Darkness", "Heavenly Sin", "You're my sunshine", "The great blue", "Alone in the golden city", "An Ungodly row on Deck", "Lost and Found", "A moonless night", "Nothing's too hard - Nothing's easy", "Drink water", "Ally cat", "Waking dream", "Hugged to death", "Mean streak", "Heavy air", "Kissing spree", "Little on the nose", "Cacophony of Voices", "When the sun loves the Moon", "Beings Beyond", "Reality Escalator", "The cave never really leaves people", "Selfish wish", "Wanting/Knowing"]
+messages = ["Hiya", "I'm sorry Dave - I'm afraid I can't do that", "First things last", "Perfectly broken", "Sure as the Sun", "Dog days aren't over", "The Walking Moon", "Sunny side Up", "Caught in a Good Lie", "Sinking Ships", "Wave Hello",  "All Prevailing", "Fear the Light", "A Heavenly Sin", "You're my sunshine", "The great blue", "Alone in the golden city", "An Ungodly row on Deck", "Lost and Found", "Shipping & Handling", "Nothing's too hard - Nothing's easy", "Ally cat", "Waking dream", "Hugged to death", "Heavy air", "Kissing spree", "When the sun loves the moon", "Go Beyond", "Reality Escalator", "The cave never really leaves people", "Wanting/Knowing", "Okey Dokey Lokey", ""]
 msg = random.choice(messages)
 status_label = tk.Label(root, text=msg, bg="#202041", fg="white")
 status_label.grid(row=4, column=0, pady=(5, 0))
